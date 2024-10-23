@@ -23,7 +23,7 @@ public class Voiture {
     //TODO ajout pour le nouveau TP
     private String couleur;
 
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "proprietaire_id")
     private Personne proprietaire;
 

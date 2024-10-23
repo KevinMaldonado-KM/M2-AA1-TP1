@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -92,5 +92,48 @@ public class VoitureServiceTest {
         assertEquals(0, result.size());
     }
 
+    @Test
+    public void testSearchVoituresByPreferences() {
+        // Arrange
+        Voiture voiture1 = new Voiture();
+        voiture1.setId(1L);
+        voiture1.setType(TypeVoiture.SUV);
+        voiture1.setPrix(20000.0);
 
+        Voiture voiture2 = new Voiture();
+        voiture2.setId(2L);
+        voiture2.setType(TypeVoiture.BERLINE);
+        voiture2.setPrix(50000.0);
+
+        // Simule la réponse du repository
+        when(voitureRepository.searchByPreferences(TypeVoiture.SUV, null)).thenReturn(Arrays.asList(voiture1));
+        when(voitureRepository.searchByPreferences(null, 20000.0)).thenReturn(Arrays.asList(voiture1));
+        when(voitureRepository.searchByPreferences(TypeVoiture.BERLINE, 50000.0)).thenReturn(Arrays.asList(voiture2));
+
+        // Act
+        List<VoitureDTO> result1 = voitureService.searchVoitures(TypeVoiture.SUV, null); // Recherche par type uniquement
+        List<VoitureDTO> result2 = voitureService.searchVoitures(null, 20000.0); // Recherche par prix avec +/- 10%
+        List<VoitureDTO> result3 = voitureService.searchVoitures(TypeVoiture.BERLINE, 50000.0); // Recherche par type et prix
+
+        // Assert
+        assertNotNull(result1);
+        assertNotNull(result2);
+        assertNotNull(result3);
+
+        // Vérification des résultats
+        assertEquals(1, result1.size());
+        assertEquals(TypeVoiture.SUV, result1.get(0).getType());
+
+        // Vérification de la marge de 10% pour un prix de 20000
+        double expectedMinPriceFor20000 = 20000 * 0.9;
+        double expectedMaxPriceFor20000 = 20000 * 1.1;
+        assertTrue(result2.get(0).getPrix() >= expectedMinPriceFor20000 && result2.get(0).getPrix() <= expectedMaxPriceFor20000);
+
+        // Vérification de la marge de 10% pour un prix de 50000
+        assertEquals(1, result3.size());
+        assertEquals(TypeVoiture.BERLINE, result3.get(0).getType());
+        double expectedMinPriceFor50000 = 50000 * 0.9;
+        double expectedMaxPriceFor50000 = 50000 * 1.1;
+        assertTrue(result3.get(0).getPrix() >= expectedMinPriceFor50000 && result3.get(0).getPrix() <= expectedMaxPriceFor50000);
+    }
 }

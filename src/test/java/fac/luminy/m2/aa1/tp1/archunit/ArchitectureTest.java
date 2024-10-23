@@ -26,7 +26,7 @@ public class ArchitectureTest {
      */
     @Test
     public void repositoriesShouldBeInRepositoryPackage() {
-        JavaClasses importedClasses = new ClassFileImporter().importPackages("fac.luminy.architecture.sample.project");
+        JavaClasses importedClasses = new ClassFileImporter().importPackages("fac.luminy.m2.aa1.tp1");
 
         ArchRule rule = ArchRuleDefinition.classes()
                 .that().haveSimpleNameEndingWith("Repository")
@@ -36,9 +36,27 @@ public class ArchitectureTest {
     }
 
     /**
-     * Vérifie qu'aucune classe étendant JpaRepository ne se trouve en dehors du package 'toto'.
+     * Vérifie que toutes les classes de controller se trouvent dans le package correct.
+     * Cette règle s'assure que toutes les classes dont le nom se termine par "Controller"
+     * résident dans un package contenant "controller".
      *
-     * @throws AssertionError si une classe étendant JpaRepository est en dehors du package 'toto'
+     * @throws AssertionError si une classe de controller n'est pas dans le package correct
+     */
+    @Test
+    public void controllerShouldBeControllerInPackage() {
+        JavaClasses importedClasses = new ClassFileImporter().importPackages("fac.luminy.m2.aa1.tp1");
+
+        ArchRule rule = ArchRuleDefinition.classes()
+                .that().haveSimpleNameEndingWith("Controller")
+                .should().resideInAPackage("..controller..");
+
+        rule.check(importedClasses);
+    }
+
+    /**
+     * Vérifie qu'aucune classe étendant JpaRepository ne se trouve en dehors du package 'repository'.
+     *
+     * @throws AssertionError si une classe étendant JpaRepository est en dehors du package 'repository'
      */
     @Test
     public void jpaRepositoriesShouldBeInRepositoryPackage() {
@@ -58,7 +76,13 @@ public class ArchitectureTest {
      */
     @Test
     public void controllersShouldNotDependOnRepositories() {
-        //TODO à implementer
+        JavaClasses importedClasses = new ClassFileImporter().importPackages("fac.luminy.m2.aa1.tp1");
+
+        ArchRule rule = ArchRuleDefinition.noClasses()
+                .that().resideInAPackage("..controller..")
+                .should().dependOnClassesThat().resideInAPackage("..repository..");
+
+        rule.check(importedClasses);
     }
 
 
