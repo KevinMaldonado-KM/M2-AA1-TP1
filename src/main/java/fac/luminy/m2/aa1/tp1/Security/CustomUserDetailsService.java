@@ -50,10 +50,10 @@ public class CustomUserDetailsService implements UserDetailsService {
     @PostConstruct
     public void init() {
         var encoder = new BCryptPasswordEncoder();
-        var admin = new XUser("admin", encoder.encode("admin"), Set.of("ADMINISTRATEUR"));
-        var proprietaire = new XUser("proprietaire", encoder.encode("proprietaire"), Set.of("PROPRIETAIRE"));
-        var locataire = new XUser("locataire", encoder.encode("locataire"), Set.of("LOUEUR"));
-        userRepository.save(admin);
+        var admin = new XUser("admin", encoder.encode("admin"), Set.of("ROLE_ADMIN"));
+        var proprietaire = new XUser("proprietaire", encoder.encode("proprietaire"), Set.of("ROLE_PROPRIETAIRE"));
+        var locataire = new XUser("locataire", encoder.encode("locataire"), Set.of("ROLE_LOUEUR"));
+        admin = userRepository.save(admin);
         userRepository.save(proprietaire);
         userRepository.save(locataire);
         System.out.println("--- INIT SPRING SECURITY USERS ---");

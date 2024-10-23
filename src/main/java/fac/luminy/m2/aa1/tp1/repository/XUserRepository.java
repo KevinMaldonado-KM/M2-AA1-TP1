@@ -10,4 +10,5 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public interface XUserRepository extends JpaRepository<XUser, String> {
 
+    XUser findByUserName(String username);
 }

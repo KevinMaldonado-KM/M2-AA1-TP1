@@ -24,7 +24,7 @@ public class SecurityConfig {
 
         http.authorizeHttpRequests(config -> {
             config.requestMatchers(publicEndpoints).permitAll();
-            config.requestMatchers(adminEndpoints).hasAuthority("ADMINISTRATEUR");
+            config.requestMatchers(adminEndpoints).hasAuthority("ADMIN");
             config.anyRequest().authenticated();
         });
 
